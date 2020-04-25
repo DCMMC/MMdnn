@@ -174,7 +174,9 @@ class MXNetParser(Parser):
         # digraph = mx.viz.plot_network(sym, save_format='jpg') # For debugging
         # digraph.render()
 
-        model = mx.mod.Module(symbol = sym)
+        # DCMMC: https://github.com/microsoft/MMdnn/issues/659
+#         model = mx.mod.Module(symbol = sym)
+        model = mx.mod.Module(symbol = sym, label_names=['label', ])
         arg_params.update(aux_params)
         return model, arg_params
 
