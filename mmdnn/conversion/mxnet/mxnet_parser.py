@@ -842,6 +842,23 @@ class MXNetParser(Parser):
 
         # raise NotImplementedError("adjust output shape")
 
+    def rename_Reshape(self, source_node):
+        '''DCMMC: handle `Reshape`, not `reshape`'''
+        IR_node = self._convert_identity_operation(source_node, new_op='Reshape')
+
+        # old API target_shape not support yet
+        shape = source_node.get_attr("shape")
+        if not shape == None:
+            shape_list = MXNetParser.str2intList(shape)
+            for param in shape_list:
+                if param <= 0 and not param == -1:
+                    raise ValueError("special value %d for Reshape is not pre-defined in IR." % param)
+            IR_node.attr["shape"].list.i.extend(shape_list)
+
+        # output shape
+        self.set_output_shape(source_node, IR_node)
+
+        # raise NotImplementedError("adjust output shape")
 
     def rename_Flatten(self, source_node):
         self._convert_identity_operation(source_node, new_op='Flatten')
